@@ -1,6 +1,5 @@
 package stage;
 
-import com.codeborne.selenide.Condition;
 import org.openqa.selenium.By;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -10,6 +9,7 @@ import utils.RandomUtils;
 import java.io.File;
 import java.net.MalformedURLException;
 
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.WebDriverRunner.closeWebDriver;
 
@@ -21,6 +21,33 @@ public class ProductTests {
     public static void setupClass () throws MalformedURLException {
         SetupPage.setupClass();
     }
+
+    /******************************************************************/
+    /*Тест загрузки продуктов из файла*/
+    /******************************************************************/
+    @Test
+    public void addNewProductFromFile() {
+
+        System.out.println("Тест addNewProductFromFile начат");
+
+        //Открывается url приложения
+        EnvPage.openStageUrl();
+        //Авторизация пользователя
+        authPage.authOnSite();
+
+        // Переход в раздел продуктов
+        productPage.clickByLinkProducts();
+        //Загрузка товаров из файла
+        productPage.addProductFromFile();
+        //Ожидание прогресс-бара и сообщения об успешной загрузке
+        productPage.waitProgressBar();
+        productPage.checkdSuccessfullyAddedProducts();
+        //Выход из аккаунта
+        authPage.logOut();
+
+        System.out.println("Тест addNewProductFromFile завершен");
+    }
+
 
     /******************************************************************/
     /*Тест добавления нового продукта с заполнением обязательных полей*/
@@ -40,10 +67,10 @@ public class ProductTests {
         productPage.addProductManually();
 
         // Проверка нахождения на шаге 1 (информация о продукте)
-        $("#steps-uid-1-p-0>div.steps-form--name").shouldHave(Condition.text("Product info"));
+        $("#steps-uid-1-p-0>div.steps-form--name").shouldHave(text("Product info"));
         // Заполнение обязательных полей на шаге 1
-        String ProdName = "Product_"+ RandomUtils.getRandomLetters();
-        $("#product_name").setValue(ProdName);
+        String prodName = "Product_"+ RandomUtils.getRandomLetters();
+        $("#product_name").setValue(prodName);
         $("#product_cateogry").selectOptionContainingText("- Chairs");
         $("#product_increment").setValue("10");
         $("#product_terms").selectOptionByValue("13");
@@ -52,21 +79,21 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 2
-        $("#steps-uid-1-p-1 > div.steps-form--name").shouldHave(Condition.text("Product unique ID"));
+        $("#steps-uid-1-p-1 > div.steps-form--name").shouldHave(text("Product unique ID"));
         // Заполнение обязательных полей на шаге 2
         $("#product_sku").setValue("201");
         $(By.name("product[ean]")).setValue("202");
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 3
-        $("#steps-uid-1-p-2>div.steps-form--name").shouldHave(Condition.text("Product dimensions"));
+        $("#steps-uid-1-p-2>div.steps-form--name").shouldHave(text("Product dimensions"));
         // Заполнение обязательных полей на шаге 3
         $("#product_height").setValue("350");
         $("#product_weight").setValue("300");
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 4
-        $("#steps-uid-1-p-3>div.steps-form--name").shouldHave(Condition.text("Packing info"));
+        $("#steps-uid-1-p-3>div.steps-form--name").shouldHave(text("Packing info"));
         // Заполнение обязательных полей на шаге 4
         $("#product_number_item_article").setValue("40");
         $("#inner_box").setValue("41");
@@ -84,7 +111,7 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 5
-        $("#steps-uid-1-p-4>div.steps-form--name").shouldHave(Condition.text("Manufacturing info"));
+        $("#steps-uid-1-p-4>div.steps-form--name").shouldHave(text("Manufacturing info"));
         // Заполнение обязательных полей на шаге 5
         $(By.name("product[supplier_number]")).setValue("500");
         $("#production_coo").selectOptionByValue("BD");
@@ -94,7 +121,7 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 6
-        $("#steps-uid-1-p-5>div.steps-form--name").shouldHave(Condition.text("Pricing"));
+        $("#steps-uid-1-p-5>div.steps-form--name").shouldHave(text("Pricing"));
         // Заполнение обязательных полей на шаге 6
         $(By.name("product[rrp][]")).setValue("600");
         $(By.name("product[ddp]")).setValue("610");
@@ -103,7 +130,7 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 7
-        $("#steps-uid-1-p-6>div.steps-form--name").shouldHave(Condition.text("Product images"));
+        $("#steps-uid-1-p-6>div.steps-form--name").shouldHave(text("Product images"));
         // Загрузка фото товара на шаге 7
         // Тестовый файл для загрузки должен находится в указанной директории
         $("#file-1").uploadFile(new File("C:\\Test\\test.jpg"));
@@ -111,13 +138,10 @@ public class ProductTests {
 
         //Переход в раздел Products и проверка наличия добавленного продукта
         productPage.clickByLinkProducts();
-        productPage.checkAddNewProduct(ProdName);
+        productPage.checkAddNewProduct(prodName);
 
         //Выход из аккаунта
-        $(".account").click();
-        $(By.linkText("Log out")).click();
-        $(By.xpath("//h1[contains(text(),'Log In')]")).shouldBe(Condition.visible);
-        //authPage.logOut();
+        authPage.logOut();
 
         System.out.println("Тест addNewProductWithRequiredFields завершен");
     }
@@ -140,7 +164,7 @@ public class ProductTests {
         productPage.addProductManually();
 
         // Проверка нахождения на шаге 1 (информация о продукте)
-        $("#steps-uid-1-p-0>div.steps-form--name").shouldHave(Condition.text("Product info"));
+        $("#steps-uid-1-p-0>div.steps-form--name").shouldHave(text("Product info"));
         // Заполнение всех возможных полей на шаге 1
         String ProdName = "Product_all"+ RandomUtils.getRandomLetters();
         $("#product_name").setValue(ProdName);
@@ -161,14 +185,14 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 2
-        $("#steps-uid-1-p-1 > div.steps-form--name").shouldHave(Condition.text("Product unique ID"));
+        $("#steps-uid-1-p-1 > div.steps-form--name").shouldHave(text("Product unique ID"));
         // Заполнение всех возможных полей на шаге 2
         $("#product_sku").setValue("201");
         $(By.name("product[ean]")).setValue("202");
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 3
-        $("#steps-uid-1-p-2>div.steps-form--name").shouldHave(Condition.text("Product dimensions"));
+        $("#steps-uid-1-p-2>div.steps-form--name").shouldHave(text("Product dimensions"));
         // Заполнение всех возможных полей на шаге 3
         $(By.name("product[measurement]")).selectRadio("49");
         $("#product_height").setValue("300");
@@ -180,7 +204,7 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 4
-        $("#steps-uid-1-p-3>div.steps-form--name").shouldHave(Condition.text("Packing info"));
+        $("#steps-uid-1-p-3>div.steps-form--name").shouldHave(text("Packing info"));
         // Заполнение всех возможных полей на шаге 4
         $("#product_number_item_article").setValue("40");
         $(By.name("product[gift_box]")).click();
@@ -199,7 +223,7 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 5
-        $("#steps-uid-1-p-4>div.steps-form--name").shouldHave(Condition.text("Manufacturing info"));
+        $("#steps-uid-1-p-4>div.steps-form--name").shouldHave(text("Manufacturing info"));
         // Заполнение всех возможных полей на шаге 5
         $(By.name("product[supplier_number]")).setValue("500");
         $("#production_coo").selectOptionContainingText("China");
@@ -213,7 +237,7 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 6
-        $("#steps-uid-1-p-5>div.steps-form--name").shouldHave(Condition.text("Pricing"));
+        $("#steps-uid-1-p-5>div.steps-form--name").shouldHave(text("Pricing"));
         // Заполнение всех возможных полей на шаге 6
         $(By.name("product[rrp][]")).setValue("600");
         $("#rrp_currency").selectOptionContainingText("EUR");
@@ -226,7 +250,7 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 7
-        $("#steps-uid-1-p-6>div.steps-form--name").shouldHave(Condition.text("Product images"));
+        $("#steps-uid-1-p-6>div.steps-form--name").shouldHave(text("Product images"));
         // Заполнение всех возможных полей на шаге 7
         // Тестовый файл для загрузки должен находится в указанной директории
         $("#file-1").uploadFile(new File("C:\\Test\\test.jpg"));
@@ -262,16 +286,16 @@ public class ProductTests {
         productPage.addProductManually();
 
         // Проверка нахождения на шаге 1
-        $("#steps-uid-1-p-0>div.steps-form--name").shouldHave(Condition.text("Product info"));
+        $("#steps-uid-1-p-0>div.steps-form--name").shouldHave(text("Product info"));
         // Нажатие на кнопку перехода на следующий шаг без заполнения обязательных полей
         productPage.clickButtonNext();
         // Проверка наличия валидации обязательных полей
-        $("#product_name-error").shouldHave(Condition.text("This is a required field."));
-        $("#product_cateogry-error").shouldHave(Condition.text("This is a required field."));
-        $("#product_increment-error").shouldHave(Condition.text("This is a required field."));
-        $("#product_terms-error").shouldHave(Condition.text("This is a required field."));
-        $("#product_material-error").shouldHave(Condition.text("This is a required field."));
-        $("#product_color-error").shouldHave(Condition.text("This is a required field."));
+        $("#product_name-error").shouldHave(text("This is a required field."));
+        $("#product_cateogry-error").shouldHave(text("This is a required field."));
+        $("#product_increment-error").shouldHave(text("This is a required field."));
+        $("#product_terms-error").shouldHave(text("This is a required field."));
+        $("#product_material-error").shouldHave(text("This is a required field."));
+        $("#product_color-error").shouldHave(text("This is a required field."));
 
         // Заполнение обязательных полей на шаге 1
         String ProdName = "Product_"+ RandomUtils.getRandomLetters();
@@ -284,12 +308,11 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 2
-        $("#steps-uid-1-p-1 > div.steps-form--name").shouldHave(Condition.text("Product unique ID"));
+        $("#steps-uid-1-p-1 > div.steps-form--name").shouldHave(text("Product unique ID"));
         // Нажатие на кнопку перехода на следующий шаг без заполнения обязательных полей
         productPage.clickButtonNext();
         // Проверка наличия валидации обязательных полей
-        $("#product_sku-error").shouldHave(Condition.text("This is a required field."));
-        //$("#product[ean]-error").shouldHave(Condition.text("This is a required field."));
+        $("#product_sku-error").shouldHave(text("This is a required field."));
 
         // Заполнение обязательных полей на шаге 2
         $("#product_sku").setValue("201");
@@ -297,12 +320,12 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 3
-        $("#steps-uid-1-p-2>div.steps-form--name").shouldHave(Condition.text("Product dimensions"));
+        $("#steps-uid-1-p-2>div.steps-form--name").shouldHave(text("Product dimensions"));
         // Нажатие на кнопку перехода на следующий шаг без заполнения обязательных полей
         productPage.clickButtonNext();
         // Проверка наличия валидации обязательных полей
-        $("#product_height-error").shouldHave(Condition.text("This is a required field."));
-        $("#product_weight-error").shouldHave(Condition.text("This is a required field."));
+        $("#product_height-error").shouldHave(text("This is a required field."));
+        $("#product_weight-error").shouldHave(text("This is a required field."));
 
         // Заполнение обязательных полей на шаге 3
         $("#product_height").setValue("350");
@@ -310,23 +333,17 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 4
-        $("#steps-uid-1-p-3>div.steps-form--name").shouldHave(Condition.text("Packing info"));
+        $("#steps-uid-1-p-3>div.steps-form--name").shouldHave(text("Packing info"));
         // Нажатие на кнопку перехода на следующий шаг без заполнения обязательных полей
         productPage.clickButtonNext();
         // Проверка наличия валидации обязательных полей
-        $("#product_number_item_article-error").shouldHave(Condition.text("This is a required field."));
-        $("#inner_box-error").shouldHave(Condition.text("This is a required field."));
-        $("#inner_box_length-error").shouldHave(Condition.text("This is a required field."));
-        $("#inner_box_height-error").shouldHave(Condition.text("This is a required field."));
-        $("#inner_box_width-error").shouldHave(Condition.text("This is a required field."));
-        $("#inner_box_weight-error").shouldHave(Condition.text("This is a required field."));
-        $("#inner_box_volume-error").shouldHave(Condition.text("This is a required field."));
-        //$("#product[outer_box_quantity]-error").shouldHave(Condition.text("This is a required field."));
-        //$("#product[length_outer_box]-error").shouldHave(Condition.text("This is a required field."));
-        //$("#product[height_outer_box]-error").shouldHave(Condition.text("This is a required field."));
-        //$("#product[width_outer_box]-error").shouldHave(Condition.text("This is a required field."));
-        //$("#product[weight_outer_box]-error").shouldHave(Condition.text("This is a required field."));
-        //$("#product[volume_outer_box]-error").shouldHave(Condition.text("This is a required field."));
+        $("#product_number_item_article-error").shouldHave(text("This is a required field."));
+        $("#inner_box-error").shouldHave(text("This is a required field."));
+        $("#inner_box_length-error").shouldHave(text("This is a required field."));
+        $("#inner_box_height-error").shouldHave(text("This is a required field."));
+        $("#inner_box_width-error").shouldHave(text("This is a required field."));
+        $("#inner_box_weight-error").shouldHave(text("This is a required field."));
+        $("#inner_box_volume-error").shouldHave(text("This is a required field."));
 
         // Заполнение обязательных полей на шаге 4
         $("#product_number_item_article").setValue("40");
@@ -345,14 +362,11 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 5
-        $("#steps-uid-1-p-4>div.steps-form--name").shouldHave(Condition.text("Manufacturing info"));
+        $("#steps-uid-1-p-4>div.steps-form--name").shouldHave(text("Manufacturing info"));
         // Нажатие на кнопку перехода на следующий шаг без заполнения обязательных полей
         productPage.clickButtonNext();
         // Проверка наличия валидации обязательных полей
-        //$("#product[supplier_number]-error").shouldHave(Condition.text("This is a required field."));
-        $("#product_lead_time-error").shouldHave(Condition.text("This is a required field."));
-        //$("#product[moq]-error").shouldHave(Condition.text("This is a required field."));
-        //$("#product[htc]-error").shouldHave(Condition.text("This is a required field."));
+        $("#product_lead_time-error").shouldHave(text("This is a required field."));
 
         // Заполнение обязательных полей на шаге 5
         $(By.name("product[supplier_number]")).setValue("500");
@@ -363,13 +377,10 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 6
-        $("#steps-uid-1-p-5>div.steps-form--name").shouldHave(Condition.text("Pricing"));
+        $("#steps-uid-1-p-5>div.steps-form--name").shouldHave(text("Pricing"));
         // Нажатие на кнопку перехода на следующий шаг без заполнения обязательных полей
         productPage.clickButtonNext();
         // Проверка наличия валидации обязательных полей
-        //$("#product[rrp][]-error").shouldHave(Condition.text("This is a required field."));
-        //$("#product[ddp]-error").shouldHave(Condition.text("This is a required field."));
-        //$("#product[fob]-error").shouldHave(Condition.text("This is a required field."));
 
         // Заполнение обязательных полей на шаге 6
         $(By.name("product[rrp][]")).setValue("600");
@@ -379,7 +390,7 @@ public class ProductTests {
         productPage.clickButtonNext();
 
         // Проверка нахождения на шаге 7
-        $("#steps-uid-1-p-6>div.steps-form--name").shouldHave(Condition.text("Product images"));
+        $("#steps-uid-1-p-6>div.steps-form--name").shouldHave(text("Product images"));
 
         $("#file-1").uploadFile(new File("C:\\Test\\test.jpg"));
         productPage.clickButtonFinish();
