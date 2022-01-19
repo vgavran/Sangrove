@@ -6,7 +6,7 @@ import com.codeborne.selenide.WebDriverRunner;
 import java.net.MalformedURLException;
 
 public class SetupPage {
-    public static void setupClass() throws MalformedURLException {
+    public static void gitsetupClass() throws MalformedURLException {
         Configuration.browser = WebDriverRunner.CHROME;
         Configuration.timeout = 15000;
         Configuration.browserPosition = "1x1";

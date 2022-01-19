@@ -6,11 +6,11 @@ public class EnvPage {
     public static void openStageUrl () {
         // Открытие тестового хоста с Basic Auth https://testnode.sangrove.com/
         //open("http://lappartement.sangrove.com/");
-        open("https://stage01.sangrove.com/","","vptnusr","nwP4hsNqqYT7bMCn4ixX");
+        open("https://stage01.sangrove.com/","","user","123456");
     }
 
     public static void openAdminStageUrl() {
-        open("https://admin.testnode.sangrove.com/admin_thn46i/","","vptnusr","nwP4hsNqqYT7bMCn4ixX");
+        open("https://admin.testnode.sangrove.com/admin_thn46i/","","user","123456");
     }
 
     public static void openStage01Url () {

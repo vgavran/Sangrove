@@ -11,7 +11,7 @@ public class AdminPage {
         EnvPage.openAdminStageUrl();
         // Ввод логина-пароля и аутентификация в админке
         $("#username").setValue("vgavran");
-        $("#login").setValue("IOKhsrrsed%H~1");
+        $("#login").setValue("fjds6$fh");
         $(By.xpath("//button[@class='action-login action-primary']")).click();
         $(By.xpath("//h1[normalize-space()='Dashboard']")).shouldBe(visible);
     }

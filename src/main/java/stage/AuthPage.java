@@ -11,7 +11,7 @@ public class AuthPage {
     public void authOnSite (){
         // Ввод логина-пароля и аутентификация на сайте
         $("#email").setValue("test@sangrove.com");  //
-        $("#pass").setValue("uHcgV2iGRg");  //
+        $("#pass").setValue("uHcgV2iGR");  //
         $(By.xpath("//*[@id='login-form']/div[5]/input")).click();
     }
 
